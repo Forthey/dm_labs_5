@@ -1,56 +1,66 @@
 #include "HuffmanStringCoder.h"
 
-StringWithMeta HuffmanStringEncoder::encode(const std::string &str) {
-    auto encodedText = std::make_shared<std::string>();
+#include <limits>
+#include <iostream>
 
-    std::size_t encodedFill = 0ull;
-
-    uint8 i = 0;
-    char encodedChunk = char(0);
-    for (char const ch : str) {
-        CharCodeWithMeta const& code = charToCode->at(ch);
-        uint8 discharge = code.length;
-
-        while (discharge > 0) {
-            if (i != 0 && i % 8 == 0) {
-                encodedText->push_back(encodedChunk);
-                encodedChunk = char(0);
-                encodedFill++;
-            }
-            encodedChunk = char(encodedChunk << 1) + ((code.code >> (discharge - uint8(1))) & 1ull);
-            discharge--;
-            i++;
-        }
-    }
-
-    if ((i - 1) % 8 != 0) {
-        encodedText->push_back(encodedChunk);
-    }
-
-    return {encodedText, uint8(i % uint8(8))};
+HuffmanStringEncoder::HuffmanStringEncoder(std::unordered_map<char, CharCodeWithMeta> const& charToCode, std::string const& str) :
+    charToCode(charToCode), str(str) {
+    encodeCodes();
+    encodeStr();
 }
 
-std::shared_ptr<std::string> HuffmanStringDecoder::decode(const StringWithMeta &str) {
-    auto decodingResult = std::make_shared<std::string>();
-    uint64 code = 0ull;
-    uint8 codeLength = uint8(0);
+void HuffmanStringEncoder::encodeCodes() {
+    encoded.placeChar(static_cast<char>(charToCode.size()));
+    for (auto &[ch, code] : charToCode) {
+        encoded.placeChar(ch);
+        encoded.placeCharCode({code.length, 6});
+        encoded.placeCharCode(code);
+    }
+}
 
-    for (std::size_t i = 0ull; i < str.str->length(); ++i) {
-        char ch = str.str->at(i);
-        uint8 bitsToRead = (i == str.str->length() - 1ull) ? str.bitsAtTheEnd : MAX_BITS_CHUNK;
-        uint64 discharge = bitsToRead;
+void HuffmanStringEncoder::encodeStr() {
+    for (char const ch : str) {
+        encoded.placeCharCode(charToCode.at(ch));
+    }
+    encoded.setEnd();
+}
 
-        for (uint8 j = uint8(0); j < bitsToRead; ++j) {
-            code = (code << 1) + ((ch >> (discharge - 1)) & 1);
-            ++codeLength;
-            if (codeToChar->contains(code) && charToCodeLength->at(codeToChar->at(code)) == codeLength) {
-                *decodingResult += codeToChar->at(code);
-                code = 0ull;
-                codeLength = uint8(0);
-            }
-            discharge--;
+
+
+HuffmanStringDecoder::HuffmanStringDecoder(std::string const& str) : reader(str) {
+    decoded = std::make_shared<std::string>();
+    decodeCodes();
+    decodeStr();
+}
+
+void HuffmanStringDecoder::decodeCodes() {
+    uint8 codesNumber = reader.next(8);
+
+    for (uint8 i = 0; i < codesNumber; ++i) {
+        char ch = char(reader.next(8));
+        uint8 codeLength = uint8(reader.next(6));
+        uint64 code = reader.next(codeLength);
+
+        codeToChar[code] = ch;
+        charToCodeLength[ch] = codeLength;
+    }
+}
+
+void HuffmanStringDecoder::decodeStr() {
+    uint64 code = 0;
+    uint8 codeLength = 0;
+    while (!reader.reachedEnd()) {
+        if (code >= std::numeric_limits<uint64>::max() / 2)
+            throw std::runtime_error("ERROR! File is not valid");
+        code = (code << 1) + reader.nextBit();
+        codeLength++;
+        if (codeToChar.contains(code) && charToCodeLength.at(codeToChar.at(code)) == codeLength) {
+            *decoded += codeToChar[code];
+            code = 0;
+            codeLength = 0;
         }
     }
 
-    return decodingResult;
+    if (code != 0)
+        throw std::runtime_error("ERROR! File is not valid");
 }

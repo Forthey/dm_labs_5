@@ -12,7 +12,8 @@ namespace Huffman {
 
 	class Huffman {
 	public:
-		void compress(std::string const& text);
+		void compress(std::string const& text, std::string const& outFilename);
+        std::shared_ptr<std::string> decompress(std::string const& inFilename);
 	};
 
 }

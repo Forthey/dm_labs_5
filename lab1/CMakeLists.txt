@@ -17,6 +17,8 @@ SET(SOURCE_FILES
         source/subclasses/HuffmanTree.cpp
         source/subclasses/HuffmanStringCoder.cpp
         source/subclasses/HuffmanIO.cpp
+        source/subclasses/utility/BinaryString.cpp
+        source/subclasses/utility/BinaryStringReader.cpp
 )
 
 add_executable(${PROJECT_NAME} ${SOURCE_FILES})

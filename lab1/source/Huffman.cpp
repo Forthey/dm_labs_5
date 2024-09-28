@@ -5,28 +5,24 @@
 #include <format>
 
 #include "subclasses/HuffmanStringCoder.h"
+#include "subclasses/HuffmanIO.h"
 
 namespace Huffman {
-    void Huffman::compress(std::string const& text) {
-		auto huffmanTree = std::make_shared<HuffmanTree>(text);
-		auto codes = huffmanTree->buildCodes();
-        auto encodedText = std::make_shared<HuffmanStringEncoder>(codes)->encode(text);
+    void Huffman::compress(std::string const& text, std::string const& outFilename) {
+		auto codes = std::make_shared<HuffmanTree>(text)->buildCodes();
+        auto encodedText = std::make_shared<HuffmanStringEncoder>(*codes, text)->getEncoded();
 
-        std::cout << "length: " << encodedText.str->length() << " - " << int(encodedText.bitsAtTheEnd) << "bits at the end" << std::endl;
-        std::cout << "encoding result: " << *encodedText.str << "\n";
-        for (auto ch : *encodedText.str) {
-            std::cout << std::format("{}\n", std::to_string(ch));
-        }
-//        printCodes(codes);
+        std::cout << std::format("size: {}B -> {}B ({}%)\n", text.length(), encodedText->length(),
+                                 int((1.0 - double(encodedText->length()) / double(text.length())) * 100));
 
-        auto codeToChar = std::make_shared<std::unordered_map<uint64, char>>();
-        auto charToCodeLength = std::make_shared<std::unordered_map<char, uint8>>();
-        for (auto const& [ch, code] : *codes) {
-            codeToChar->insert({code.code, ch});
-            charToCodeLength->insert({ch, code.length});
-        }
-        auto decodedText = std::make_shared<HuffmanStringDecoder>(codeToChar, charToCodeLength)->decode(encodedText);
-        std::cout << *decodedText << std::endl;
+        HuffmanIO::printCodes(codes);
+        HuffmanIO::writeToFile(outFilename, *encodedText);
+//        auto codeToChar = std::make_shared<std::unordered_map<uint64, char>>();
+//        auto charToCodeLength = std::make_shared<std::unordered_map<char, uint8>>();
+//        auto decodedText = std::make_shared<HuffmanStringDecoder>(*encodedText)->getDecoded();
 	}
 
+    std::shared_ptr<std::string> Huffman::decompress(std::string const& inFilename) {
+        return std::make_shared<HuffmanStringDecoder>(*HuffmanIO::readFromFile(inFilename))->getDecoded();
+    }
 }
