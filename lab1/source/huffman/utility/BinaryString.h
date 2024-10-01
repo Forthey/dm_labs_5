@@ -5,12 +5,12 @@
 
 
 class BinaryString {
-    uint8 const bitsInChar = 8;
+    uint8_t const bitsInChar = 8;
 
     std::shared_ptr<std::string> str = std::make_shared<std::string>();
-    uint8 bitsAtTheEnd = 0;
+    uint8_t bitsAtTheEnd = 0;
 public:
-    BinaryString(uint8 const bitsInChar = 8) : bitsInChar(bitsInChar) {}
+    BinaryString(uint8_t const bitsInChar = 8) : bitsInChar(bitsInChar) {}
 
     void placeBit(bool const bit);
 

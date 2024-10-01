@@ -13,12 +13,12 @@ void BinaryString::placeBit(bool const bit) {
 }
 
 void BinaryString::placeChar(char const ch) {
-    for (uint8 i = bitsInChar; i > 0; --i)
+    for (uint8_t i = bitsInChar; i > 0; --i)
         placeBit((ch >> (i - 1)) & 1);
 }
 
 void BinaryString::placeCharCode(CharCodeWithMeta const &code) {
-    for (uint8 i = code.length; i > 0; --i) {
+    for (uint8_t i = code.length; i > 0; --i) {
         placeBit((code.code >> (i - 1)) & 1);
     }
 }
@@ -28,7 +28,7 @@ std::shared_ptr<std::string> BinaryString::getString() {
 }
 
 void BinaryString::setEnd() {
-    uint8 trueBitsAtTheEnd = bitsAtTheEnd;
+    uint8_t trueBitsAtTheEnd = bitsAtTheEnd;
     while (bitsAtTheEnd != bitsInChar) {
         placeBit(0);
     }

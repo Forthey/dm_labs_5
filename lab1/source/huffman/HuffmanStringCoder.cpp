@@ -11,7 +11,7 @@ HuffmanStringEncoder::HuffmanStringEncoder(std::unordered_map<char, CharCodeWith
 }
 
 void HuffmanStringEncoder::encodeCodes() {
-    encoder.placeChar(static_cast<char>(charToCode.size()));
+    encoder.placeChar(static_cast<char>(charToCode.size() - 1ull));
     for (auto &[ch, code]: charToCode) {
         encoder.placeChar(ch);
         encoder.placeCharCode({code.length, 6});
@@ -34,22 +34,22 @@ HuffmanStringDecoder::HuffmanStringDecoder(std::string const &str) : reader(str)
 }
 
 void HuffmanStringDecoder::decodeCodes() {
-    uint8 codesNumber = reader.next(8);
+    uint8_t codesNumber = reader.next(8);
 
-    for (uint8 i = 0; i < codesNumber; ++i) {
+    for (uint16_t i = 0; i <= codesNumber; ++i) {
         char ch = static_cast<char>(reader.next(8));
-        uint8 codeLength = static_cast<uint8>(reader.next(6));
-        uint64 code = reader.next(codeLength);
+        uint8_t codeLength = static_cast<uint8_t>(reader.next(6));
+        uint64_t code = reader.next(codeLength);
 
         codeToChar[{code, codeLength}] = ch;
     }
 }
 
 void HuffmanStringDecoder::decodeStr() {
-    uint64 code = 0ull;
-    uint8 codeLength = 0;
+    uint64_t code = 0ull;
+    uint8_t codeLength = 0;
     while (!reader.reachedEnd()) {
-        if (code >= std::numeric_limits<uint64>::max() / 2ull)
+        if (code >= std::numeric_limits<uint64_t>::max() / 2ull)
             throw std::runtime_error("ERROR! File is not valid");
         code = (code << 1) + reader.nextBit();
         codeLength++;

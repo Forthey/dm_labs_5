@@ -9,7 +9,7 @@
 
 std::string HuffmanIO::prettyCode(CharCodeWithMeta const &code) {
     std::string result;
-    for (uint8 i = code.length; i > 0; --i) {
+    for (uint8_t i = code.length; i > 0; --i) {
         result += (static_cast<char>(code.code >> (i - 1)) & 1) + '0';
     }
     return result;
@@ -23,14 +23,14 @@ void HuffmanIO::printCodes(std::unordered_map<char, CharCodeWithMeta> const& cod
 }
 
 std::string HuffmanIO::prettySize(uint64_t size) {
-    static std::unordered_map<uint8, std::string> levelToMeasureUnit = {
+    static std::unordered_map<uint8_t, std::string> levelToMeasureUnit = {
             {0, "B"},
             {1, "KB"},
             {2, "MB"},
             {3, "GB"}
     };
     std::size_t loweredSize;
-    uint8 level = 0;
+    uint8_t level = 0;
     while ((loweredSize = size / 1024) > 100) {
         size = loweredSize;
         level++;

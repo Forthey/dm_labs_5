@@ -1,11 +1,9 @@
 #pragma once
 
-#include "types.h"
-
 class CharCodeWithMeta {
 public:
-    uint64 code;
-    uint8 length;
+    uint64_t code;
+    uint8_t length;
 
     bool operator==(CharCodeWithMeta const &code) const {
         return this->code == code.code && length == code.length;

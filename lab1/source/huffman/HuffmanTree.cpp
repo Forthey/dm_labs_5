@@ -36,12 +36,12 @@ std::unordered_map<char, CharCodeWithMeta> HuffmanTree::buildCodes() {
 
     // If text contains only 1 character
     if (!root->left & !root->right) {
-        codes.insert({root->character, {1ull, static_cast<uint8>(1)}});
+        codes.insert({root->character, {1ull, static_cast<uint8_t>(1)}});
         return codes;
     }
 
     std::stack<TraversingData> stack;
-    stack.push({root, {0ull, static_cast<uint8>(0)}});
+    stack.push({root, {0ull, static_cast<uint8_t>(0)}});
 
     while (!stack.empty()) {
         TraversingData data = stack.top();
@@ -54,12 +54,12 @@ std::unordered_map<char, CharCodeWithMeta> HuffmanTree::buildCodes() {
 
         stack.push({
             data.node->left, {
-                data.nodeCode.code << 1, static_cast<uint8>(data.nodeCode.length + uint8(1))
+                data.nodeCode.code << 1, static_cast<uint8_t>(data.nodeCode.length + uint8_t(1))
             }
         });
         stack.push({
             data.node->right, {
-                (data.nodeCode.code << 1) + 1, static_cast<uint8>(data.nodeCode.length + uint8(1))
+                (data.nodeCode.code << 1) + 1, static_cast<uint8_t>(data.nodeCode.length + uint8_t(1))
             }
         });
     }

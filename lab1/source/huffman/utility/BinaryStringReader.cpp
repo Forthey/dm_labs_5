@@ -3,15 +3,15 @@
 #include <iostream>
 #include <format>
 
-BinaryStringReader::BinaryStringReader(std::string const &binaryString, uint8 const bitsInChar) : binaryString(
+BinaryStringReader::BinaryStringReader(std::string const &binaryString, uint8_t const bitsInChar) : binaryString(
         binaryString), bitsInChar(bitsInChar) {
     if (binaryString.length() < 2)
         throw std::runtime_error(std::format("Invalid binary string length: too short ({})", binaryString.length()));
 }
 
-uint64 BinaryStringReader::next(uint8 const numberOfBits) {
-    uint64 result = 0;
-    for (uint8 i = 0; i < numberOfBits; ++i)
+uint64_t BinaryStringReader::next(uint8_t const numberOfBits) {
+    uint64_t result = 0;
+    for (uint8_t i = 0; i < numberOfBits; ++i)
         result = (result << 1) + nextBit();
     return result;
 }

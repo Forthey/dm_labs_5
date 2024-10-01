@@ -1,20 +1,18 @@
 #pragma once
 
 #include <string>
-
-#include "types.h"
-
+#include <cstdint>
 
 class BinaryStringReader {
-    uint8 const bitsInChar = 8;
+    uint8_t const bitsInChar = 8;
 
     std::string const &binaryString;
-    uint64 stringIter = 0;
-    uint8 charIter = 0;
+    uint64_t stringIter = 0;
+    uint8_t charIter = 0;
 public:
-    explicit BinaryStringReader(std::string const &binaryString, uint8 const bitsInChar = 8);
+    explicit BinaryStringReader(std::string const &binaryString, uint8_t const bitsInChar = 8);
 
-    uint64 next(uint8 const numberOfBits);
+    uint64_t next(uint8_t const numberOfBits);
 
     bool nextBit();
 
