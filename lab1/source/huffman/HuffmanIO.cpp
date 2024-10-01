@@ -51,7 +51,7 @@ void HuffmanIO::printStats(uint64_t const sizeBefore, uint64_t const sizeAfter) 
 void HuffmanIO::saveStats(uint64_t const size, uint64_t const compressedSize) {
     std::ofstream file("stats.csv", std::ofstream::app);
 
-    file << size << ";" << compressedSize << std::endl;
+    file << size << "," << compressedSize << std::endl;
 }
 
 void HuffmanIO::writeToFile(std::string const &filename, std::string const &str) {
