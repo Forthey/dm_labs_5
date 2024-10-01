@@ -3,7 +3,8 @@
 #include <iostream>
 #include <format>
 
-BinaryStringReader::BinaryStringReader(std::string const& binaryString) : binaryString(binaryString) {
+BinaryStringReader::BinaryStringReader(std::string const &binaryString, uint8 const bitsInChar) : binaryString(
+        binaryString), bitsInChar(bitsInChar) {
     if (binaryString.length() < 2)
         throw std::runtime_error(std::format("Invalid binary string length: too short ({})", binaryString.length()));
 }
@@ -19,10 +20,12 @@ bool BinaryStringReader::nextBit() {
     if (stringIter == binaryString.length() - 2 && charIter >= binaryString.back())
         throw std::runtime_error("ERROR! Unexpected EOF");
 
-    bool result = (binaryString[stringIter] >> (7 - charIter)) & 1;
-    charIter = (charIter + 1) % 8;
-    if (charIter == 0)
+    if (charIter == bitsInChar) {
+        charIter = 0;
         stringIter++;
+    }
+    bool result = (binaryString[stringIter] >> (bitsInChar - 1 - charIter)) & 1;
+    charIter++;
 
     return result;
 }

@@ -1,20 +1,26 @@
 #pragma once
-#include <set>
+
 #include <string>
 #include <unordered_map>
 
-#include "subclasses/HuffmanTree.h"
-#include "subclasses/utility/CharCodeWithMeta.h"
-
-
-
 namespace Huffman {
 
-	class Huffman {
-	public:
-		void compress(std::string const& text, std::string const& outFilename);
-        std::shared_ptr<std::string> decompress(std::string const& inFilename);
-	};
+    class Huffman {
+    public:
+        enum class KwargsKeys {
+            print_codes = 0,
+            print_stats,
+            save_stats
+        };
+    private:
+        static std::unordered_map<KwargsKeys, bool> const defaultKwargs;
+    public:
+
+        static void compress(std::string const &inFilename, std::string const &outFilename,
+                             std::unordered_map<KwargsKeys, bool> kwargs = {});
+
+        static void decompress(std::string const &inFilename, std::string const &outFilename);
+    };
 
 }
 

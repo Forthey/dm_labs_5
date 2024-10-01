@@ -9,22 +9,21 @@
 
 
 class HuffmanStringEncoder {
-    BinaryString encoded;
+    BinaryString encoder;
     std::unordered_map<char, CharCodeWithMeta> const& charToCode;
-    std::string const& str;
+    std::string const& text;
 
     void encodeCodes();
     void encodeStr();
 public:
-    HuffmanStringEncoder(std::unordered_map<char, CharCodeWithMeta> const& charToCode, std::string const& str);
+    HuffmanStringEncoder(std::unordered_map<char, CharCodeWithMeta> const& charToCode, std::string const& text);
 
-    std::shared_ptr<std::string> getEncoded() { return encoded.getString(); };
+    std::shared_ptr<std::string> getEncoded() { return encoder.getString(); };
 };
 
 class HuffmanStringDecoder {
-    std::unordered_map<uint64 , char> codeToChar;
-    std::unordered_map<char, uint8> charToCodeLength;
     BinaryStringReader reader;
+    std::unordered_map<CharCodeWithMeta, char> codeToChar;
     std::shared_ptr<std::string> decoded;
 
     void decodeCodes();

@@ -1,0 +1,4 @@
+examples/tests/*
+!examples/tests/gitkeep
+*-end.txt
+*.huff
