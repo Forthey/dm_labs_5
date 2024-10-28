@@ -24,10 +24,13 @@ public:
 
             auto const match = result->findLargestMatch();
 
+            GraphIO::writeResultToFile(std::format("examples/{}.match", filename), *match);
+
             std::cout << std::format("Largest match size: {}\n", match->size());
             for (auto &[left, right]: *match) {
                 std::cout << std::format("\t{} - {}\n", left, right);
             }
+
         }
     }
 };

@@ -1,5 +1,6 @@
 #include "GraphIO.h"
 
+#include <format>
 #include <fstream>
 
 
@@ -35,4 +36,18 @@ std::shared_ptr<BipartiteGraph> GraphIO::readGraphFromFile(std::string const &fi
     }
 
     return std::make_shared<BipartiteGraph>(vertices);
+}
+
+bool GraphIO::writeResultToFile(std::string const &fileName, Matching const &matching) {
+    std::ofstream f(fileName);
+    if (!f.is_open()) {
+        return false;
+    }
+
+    f << std::format("{}\n", matching.size());
+    for (auto &[left, right]: matching) {
+        f << std::format("{} {}\n", left, right);
+    }
+
+    return true;
 }
