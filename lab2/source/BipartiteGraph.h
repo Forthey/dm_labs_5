@@ -11,6 +11,7 @@ class BipartiteGraph {
     Vertices const vertices;
     BipartiteMask mask;
     std::shared_ptr<Matching> matching;
+    int cnt = 0;
 
     [[deprecated]] bool findAugChainRec(int const node, bool isFirst = false);
 
@@ -18,7 +19,7 @@ class BipartiteGraph {
 
     void buildMask();
 public:
-    explicit BipartiteGraph(Vertices vertices_) : vertices(std::move(vertices_)) { buildMask(); };
+    explicit BipartiteGraph(Vertices vertices_) : vertices(std::move(vertices_)), mask(vertices.size()) { buildMask(); };
 
     std::shared_ptr<Matching> findLargestMatch();
 };

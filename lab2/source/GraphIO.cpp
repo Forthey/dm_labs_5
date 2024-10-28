@@ -16,20 +16,20 @@ std::shared_ptr<BipartiteGraph> GraphIO::readGraphFromFile(std::string const &fi
         return nullptr;
     }
 
-    Vertices vertices;
+    Vertices vertices(verticesCnt + 1);
 
     for (int i = 0; i < verticesCnt; i++) {
         int node;
         if (!(f >> node)) {
             return nullptr;
         }
-        std::set<int> adjNodes;
+        std::vector<int> adjNodes;
         while (f.peek() != '\n') {
             int adjNode;
             if (!(f >> adjNode)) {
                 return nullptr;
             }
-            adjNodes.emplace(adjNode);
+            adjNodes.emplace_back(adjNode);
         }
         vertices[node] = std::move(adjNodes);
     }

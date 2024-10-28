@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <list>
+#include <queue>
 #include <ranges>
 #include <stack>
 
@@ -25,6 +26,10 @@ bool BipartiteGraph::findAugChainRec(int const node, bool const isFirst) {
     return false;
 }
 
+inline bool visited(int const lastVisited, int const node) {
+    return lastVisited >= node;
+}
+
 void BipartiteGraph::findAugChain(int const node) {
     struct NodeChain {
         struct NodePair {
@@ -33,29 +38,34 @@ void BipartiteGraph::findAugChain(int const node) {
         };
 
         int node;
+        int adjNodesIndex = 0;
         std::list<NodePair> nodePair;
     };
 
     std::stack<NodeChain> stack;
-    std::vector<bool> visited(vertices.size(), false);
+    int lastVisitedNode = -1;
 
     stack.push({node});
 
     while (!stack.empty()) {
-        NodeChain nodeChain = stack.top();
-        stack.pop();
-
-        if (visited[nodeChain.node]) {
+        NodeChain& nodeChain = stack.top();
+        if ((nodeChain.adjNodesIndex == 0 && visited(lastVisitedNode, nodeChain.node)) || nodeChain.adjNodesIndex >= vertices.at(nodeChain.node).size()) {
+            stack.pop();
             continue;
         }
-        visited[nodeChain.node] = true;
+        lastVisitedNode = nodeChain.node;
 
-        for (auto &rightNode: vertices.at(nodeChain.node)) {
+        auto& adjNodes = vertices.at(nodeChain.node);
+        while (nodeChain.adjNodesIndex < adjNodes.size()) {
+            int rightNode = adjNodes[nodeChain.adjNodesIndex];
+            nodeChain.adjNodesIndex++;
+            cnt++;
             if (!matching->contains(rightNode)) {
                 for (auto& [right, left] : nodeChain.nodePair) {
                     (*matching)[right] = left;
                 }
                 matching->emplace(rightNode, nodeChain.node);
+                stack.pop();
                 break;
             }
 
@@ -63,6 +73,7 @@ void BipartiteGraph::findAugChain(int const node) {
             newChain.nodePair.emplace_back(rightNode, nodeChain.node);
             newChain.node = matching->at(rightNode);
             stack.emplace(std::move(newChain));
+            break;
         }
     }
 }
@@ -72,8 +83,7 @@ void BipartiteGraph::buildMask() {
         return;
 
     std::queue<int> bfsQueue;
-
-    int node = vertices.begin()->first;
+    int node = 1;
     bfsQueue.push(node);
     mask[node] = true;
 
@@ -82,7 +92,7 @@ void BipartiteGraph::buildMask() {
         bfsQueue.pop();
 
         for (auto &rightNode: vertices.at(node)) {
-            if (mask.contains(rightNode)) {
+            if (mask[rightNode]) {
                 continue;
             }
             mask[rightNode] = !mask[node];
@@ -94,7 +104,7 @@ void BipartiteGraph::buildMask() {
 std::shared_ptr<Matching> BipartiteGraph::findLargestMatch() {
     matching = std::make_shared<Matching>();
 
-    for (auto &node: std::views::keys(vertices)) {
+    for (int node = 1; node < vertices.size(); node++) {
         if (!mask[node])
             continue;
         findAugChain(node);
