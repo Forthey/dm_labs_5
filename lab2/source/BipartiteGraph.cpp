@@ -55,31 +55,27 @@ void BipartiteGraph::findAugChain(int const node) {
         }
         lastVisitedNode = nodeChain.node;
 
-        auto& adjNodes = vertices.at(nodeChain.node);
-        while (nodeChain.adjNodesIndex < adjNodes.size()) {
+        if (auto& adjNodes = vertices.at(nodeChain.node); nodeChain.adjNodesIndex < adjNodes.size()) {
             int rightNode = adjNodes[nodeChain.adjNodesIndex];
             nodeChain.adjNodesIndex++;
-            cnt++;
             if (!matching->contains(rightNode)) {
                 for (auto& [right, left] : nodeChain.nodePair) {
                     (*matching)[right] = left;
                 }
                 matching->emplace(rightNode, nodeChain.node);
                 stack.pop();
-                break;
+            } else {
+                NodeChain newChain = nodeChain;
+                newChain.nodePair.emplace_back(rightNode, nodeChain.node);
+                newChain.node = matching->at(rightNode);
+                stack.emplace(std::move(newChain));
             }
-
-            NodeChain newChain = nodeChain;
-            newChain.nodePair.emplace_back(rightNode, nodeChain.node);
-            newChain.node = matching->at(rightNode);
-            stack.emplace(std::move(newChain));
-            break;
         }
     }
 }
 
 void BipartiteGraph::buildMask() {
-    if (vertices.empty())
+    if (vertices.size() <= 1)
         return;
 
     std::queue<int> bfsQueue;

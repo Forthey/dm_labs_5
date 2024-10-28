@@ -1,17 +1,15 @@
 #pragma once
 #include <memory>
-#include <unordered_set>
-#include <utility>
+#include <unordered_map>
 
 #include "types.h"
 
-using Matching = std::map<int, int>;
+using Matching = std::unordered_map<int, int>;
 
 class BipartiteGraph {
     Vertices const vertices;
     BipartiteMask mask;
     std::shared_ptr<Matching> matching;
-    int cnt = 0;
 
     [[deprecated]] bool findAugChainRec(int const node, bool isFirst = false);
 
