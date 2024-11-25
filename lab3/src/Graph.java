@@ -39,25 +39,40 @@ public class Graph {
     }
 
     private boolean checkIfAcyclic() {
+        class TraversePair {
+            public final int vertex;
+            public final int parent;
+
+            public TraversePair(int vertex, int parent) {
+                this.vertex = vertex;
+                this.parent = parent;
+            }
+        }
+
         if (vertices.length == 0) {
             return true;
         }
-        var traverseStack = new Stack<Integer>();
+
+        var traverseStack = new Stack<TraversePair>();
         HashSet<Integer> nonVisitedVertices = HashSet.newHashSet(vertices.length);
         for (int i = 0; i < vertices.length; i++) {
             nonVisitedVertices.add(i);
         }
+        traverseStack.push(new TraversePair(0, -1));
 
         while (true) {
             while (!traverseStack.isEmpty()) {
-                Integer vertex = traverseStack.pop();
-                if (!nonVisitedVertices.contains(vertex)) {
+                TraversePair pair = traverseStack.pop();
+                if (!nonVisitedVertices.contains(pair.vertex)) {
                     return false;
                 }
-                nonVisitedVertices.remove(vertex);
+                nonVisitedVertices.remove(pair.vertex);
 
-                for (int adjVertex : vertices[vertex]) {
-                    traverseStack.push(adjVertex);
+                for (int adjVertex : vertices[pair.vertex]) {
+                    if (pair.parent == adjVertex) {
+                        continue;
+                    }
+                    traverseStack.push(new TraversePair(adjVertex, pair.vertex));
                 }
             }
 
@@ -65,7 +80,7 @@ public class Graph {
                 break;
             }
 
-            traverseStack.push(nonVisitedVertices.stream().findAny().get());
+            traverseStack.push(new TraversePair(nonVisitedVertices.stream().findAny().get(), -1));
         }
 
         return true;
