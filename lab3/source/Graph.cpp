@@ -14,7 +14,7 @@ Cycle Graph::extractCycleFromPath(int vertex, Path const &path) {
             return cycle;
         }
     }
-    throw std::runtime_error("Cycle not found");
+    return {};
 }
 
 std::pair<ConnectivityComponents, Cycle> Graph::checkIfAcyclicAndConnected() {
@@ -34,7 +34,7 @@ std::pair<ConnectivityComponents, Cycle> Graph::checkIfAcyclicAndConnected() {
 
     // Двумерный массив, в котором будут храниться компоненты связности. Если их > 1, то граф несвязный
     ConnectivityComponents connectivityComponents;
-    connectivityComponents.emplace_back();
+    // connectivityComponents.emplace_back();
 
     // Цикл: список вершин
     Cycle cycle;
@@ -51,8 +51,6 @@ std::pair<ConnectivityComponents, Cycle> Graph::checkIfAcyclicAndConnected() {
         nonVisitedVertices.insert(i);
     }
 
-    traverseStack.emplace(std::make_shared<TraverseData>(0, -1, Path{}));
-
     for (int i = 0; i < vertices.size(); i++) {
         std::unordered_set<int> adjVertices(vertices[i].size());
         for (int adjVertex : vertices[i]) {
@@ -68,8 +66,12 @@ std::pair<ConnectivityComponents, Cycle> Graph::checkIfAcyclicAndConnected() {
     }
 
     // Этот цикл неявно обходит все компоненты связности
-    while (true) {
+    while (!nonVisitedVertices.empty()) {
+        // Добавляем ещё одну компоненту связности
+        connectivityComponents.emplace_back();
+
         // DFS -- начинается каждый раз для каждой компоненты связности
+        traverseStack.emplace(std::make_shared<TraverseData>(*nonVisitedVertices.begin(), -1, Path{}));
         while (!traverseStack.empty()) {
             auto data = traverseStack.top();
             traverseStack.pop();
@@ -94,13 +96,6 @@ std::pair<ConnectivityComponents, Cycle> Graph::checkIfAcyclicAndConnected() {
                 traverseStack.emplace(std::make_shared<TraverseData>(adjVertex, data->vertex, std::move(data->path)));
             }
         }
-
-        if (nonVisitedVertices.empty()) {
-            break;
-        }
-        traverseStack.emplace(std::make_shared<TraverseData>(*nonVisitedVertices.begin(), -1, Path{}));
-        // Добавляем ещё одну компоненту связности
-        connectivityComponents.emplace_back();
     }
 
     return {connectivityComponents, cycle};
@@ -109,13 +104,14 @@ std::pair<ConnectivityComponents, Cycle> Graph::checkIfAcyclicAndConnected() {
 int Graph::countEdges() const {
     int edgesCnt = 0;
     for (int i = 0; i < vertices.size(); i++) {
-        for (int j = 0; j < vertices[i].size(); j++) {
-            if (vertices[i][j] >= i) {
-                edgesCnt++;
-            }
-        }
+        edgesCnt += static_cast<int>(vertices[i].size());
+        // for (int j = 0; j < vertices[i].size(); j++) {
+        //     if (vertices[i][j] >= i) {
+        //         edgesCnt++;
+        //     }
+        // }
     }
-    return edgesCnt;
+    return edgesCnt / 2;
 }
 
 
